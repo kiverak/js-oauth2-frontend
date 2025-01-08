@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JavaScript application with PKCE</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="/js/oauth2.js"></script>
+</head>
+<body>
+
+<input type="hidden" readonly id="originalState"/>
+
+<p>hello index</p>
+
+<!--
+HTML компоненты на странице - нужны для хранения состояния значений - чтобы сравнивать с параметрами, которые приходят от auth server
+В реальном приложении - можно хранить значения в глобальных переменных
+-->
+
+<script>
+    initValues();
+</script>
+
+</body>
+</html>
