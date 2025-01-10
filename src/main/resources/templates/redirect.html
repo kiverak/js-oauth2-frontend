@@ -16,7 +16,8 @@
     if (error) {
         window.alert("Error: " + error + ", Description: " + errorDescription);
     } else {
-        console.log("auth code: " + authCode);
+        // console.log("auth code: " + authCode);
+        window.opener.requestTokens(state, authCode);
     }
 
     window.close();

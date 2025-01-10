@@ -1,10 +1,14 @@
-const SHA_256 = "SHA-256";
-const SCOPE = "openid profile";
 const CLIENT_ID = "todoapp-client";
-const S256 = "S256";
+const SCOPE = "openid";
+const GRANT_TYPE_AUTH_CODE = "authorization_code";
 const RESPONSE_TYPE_CODE = "code";
+
+const SHA_256 = "SHA-256";
+const S256 = "S256";
+
 const KEYCLOAK_URI = "https://localhost:8443/realms/todoapp-realm/protocol/openid-connect";
 const AUTH_CODE_REDIRECT_URI = "https://localhost:8080/redirect";
+const ACCESS_TOKEN_REDIRECT_URI = "https://localhost:8080/redirect";
 
 function initValues() {
 
@@ -66,4 +70,38 @@ function requestAuthCode(state, codeChallenge) {
     authUrl += "&redirect_uri=" + AUTH_CODE_REDIRECT_URI;
 
     window.open(authUrl, 'auth_window', 'width=800, height=600, left=350, top=200');
+}
+
+function requestTokens(stateFromAuthServer, authCode) {
+
+    var originalState = document.getElementById("originalState").innerHTML;
+
+    if (stateFromAuthServer === originalState) {
+        var codeVerifier = document.getElementById("codeVerifier").innerHTML;
+
+        var data = {
+            "grant_type": GRANT_TYPE_AUTH_CODE,
+            "client_id": CLIENT_ID,
+            "code": authCode,
+            "code_verifier": codeVerifier,
+            "redirect_uri": ACCESS_TOKEN_REDIRECT_URI
+        };
+
+        $.ajax({
+            beforeSend: function (request) {
+                request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+            },
+            type: "POST",
+            url: KEYCLOAK_URI + "/token",
+            data: data,
+            success: accessTokenResponse,
+            dataType: "json"
+        });
+    } else {
+        alert("Error state value");
+    }
+}
+
+function accessTokenResponse(data, status, jqXHR) {
+    console.log("access_token = " + data["access_token"]);
 }
