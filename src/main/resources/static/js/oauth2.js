@@ -1,4 +1,10 @@
 const SHA_256 = "SHA-256";
+const SCOPE = "openid profile";
+const CLIENT_ID = "todoapp-client";
+const S256 = "S256";
+const RESPONSE_TYPE_CODE = "code";
+const KEYCLOAK_URI = "https://localhost:8443/realms/todoapp-realm/protocol/openid-connect";
+const AUTH_CODE_REDIRECT_URI = "https://localhost:8080/redirect";
 
 function initValues() {
 
@@ -12,6 +18,7 @@ function initValues() {
 
     generateCodeChallenge(codeVerifier).then(codeChallenge => {
         console.log("codeChallenge = " + codeChallenge);
+        requestAuthCode(state, codeChallenge);
     });
 }
 
@@ -45,4 +52,18 @@ async function generateCodeChallenge(codeVerifier) {
     var digest = await window.crypto.subtle.digest(SHA_256, encodedValue);
 
     return base64urlencode(Array.from(new Uint8Array(digest)));
+}
+
+function requestAuthCode(state, codeChallenge) {
+    var authUrl = KEYCLOAK_URI + "/auth";
+
+    authUrl += "?response_type=" + RESPONSE_TYPE_CODE;
+    authUrl += "&client_id=" + CLIENT_ID;
+    authUrl += "&state=" + state;
+    authUrl += "&scope=" + SCOPE;
+    authUrl += "&code_challenge=" + codeChallenge;
+    authUrl += "&code_challenge_method=" + S256;
+    authUrl += "&redirect_uri=" + AUTH_CODE_REDIRECT_URI;
+
+    window.open(authUrl, 'auth_window', 'width=800, height=600, left=350, top=200');
 }
